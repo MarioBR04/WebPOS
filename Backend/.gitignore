@@ -1,0 +1,22 @@
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Docker
+docker-compose.yml
+Dockerfile
+.dockerignore
+
+# Build artifacts
+dist/
+build/
+
+# GraphQL
+*.graphql
