@@ -1,8 +1,7 @@
-// src/pages/Products.jsx
 import "./pages.css";
 import { Link } from "react-router-dom";
 
-export default function Products() {
+export default function NewSale() {
   const products = [
     { id: 1, name: "Product 1" },
     { id: 2, name: "Product 2" },

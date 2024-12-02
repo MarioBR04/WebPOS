@@ -1,5 +1,13 @@
 .main {
+  margin-left: 13%;
+  position: static;
+}
+.navbar {
+  width: 13%;
+  height: 100vh;
+  background-color: #f3f4f6;
+  border-right: 1px solid #e5e7eb;
   display: flex;
   flex-direction: column;
-  background-color: rgb(247, 140, 0);
+  position: fixed;
 }

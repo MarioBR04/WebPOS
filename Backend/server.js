@@ -13,7 +13,7 @@ const typeDefs = gql`
 
   type Product {
     id: ID!
-    user_id: ID!
+    username: String!
     name: String!
     price: Float!
     description: String
@@ -133,11 +133,11 @@ const resolvers = {
     },
     addProduct: async (
       _,
-      { user_id, name, price, description, category, barcode, image, stock }
+      { username, name, price, description, category, barcode, image, stock }
     ) => {
       const res = await client.query(
-        "INSERT INTO Products (user_id, name, price, description, category, barcode, image, stock) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
-        [user_id, name, price, description, category, barcode, image, stock]
+        "INSERT INTO Products (username, name, price, description, category, barcode, image, stock) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
+        [username, name, price, description, category, barcode, image, stock]
       );
       return res.rows[0];
     },

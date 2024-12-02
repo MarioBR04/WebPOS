@@ -15,10 +15,10 @@ function Sidebar() {
 
   const navLinks = [
     { to: "/", label: "Dashboard", icon: <HiOutlineHome /> },
-    { to: "/about", label: "Productos", icon: <HiOutlineClipboardList /> },
-    { to: "/new-sale", label: "Nueva Venta", icon: <HiOutlineShoppingCart /> },
+    { to: "/products", label: "Productos", icon: <HiOutlineClipboardList /> },
+    { to: "/newsale", label: "Nueva Venta", icon: <HiOutlineShoppingCart /> },
     {
-      to: "/active-sales",
+      to: "/currentsales",
       label: "Ventas Activas",
       icon: <HiOutlineChartBar />,
     },
@@ -58,13 +58,12 @@ function Sidebar() {
       </div>
       <div className="sidebar-footer">
         <div className="user-info">
-          <HiUserCircle />
-          <p className="user-name">{localStorage.getItem("user")}</p>
+          <HiUserCircle className="user-icon" />
+          <p className="user-name">
+            {localStorage.getItem("user") || "Usuario"}
+          </p>
           <button className="logOut" onClick={logOut}>
-            Log Out
-            <icon>
-              <HiOutlineLogout />
-            </icon>
+            <span className="logout-text">Cerrar Sesión</span>
           </button>
         </div>
       </div>

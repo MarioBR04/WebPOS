@@ -1,7 +1,5 @@
-// src/pages/About.jsx
-import Sidebar from "../webBase/SideBar";
 import "./pages.css";
-export default function About() {
+export default function Inventory() {
   return (
     <div className="main">
       <h1>About Us</h1>

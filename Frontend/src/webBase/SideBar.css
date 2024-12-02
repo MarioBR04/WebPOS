@@ -94,7 +94,10 @@
 
 .user-info {
   margin-left: 0.2rem;
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-around;
 }
 
 .user-name {
@@ -111,11 +114,13 @@
   display: flex;
 }
 
-.logOut-icon {
-  margin-right: 0rem;
-  padding-right: 2rem;
-}
 .logOut:hover {
   background-color: #e5e7eb;
   color: #1f2937;
+}
+
+.logOut-icon {
+  margin-right: 0rem;
+  width: 5rem;
+  height: 5rem;
 }

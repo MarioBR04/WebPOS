@@ -1,8 +1,7 @@
-// src/pages/ProductDetails.jsx
 import "./pages.css";
 import { useParams } from "react-router-dom";
 
-export default function ProductDetails() {
+export default function CurrentSales() {
   const { id } = useParams();
 
   return (

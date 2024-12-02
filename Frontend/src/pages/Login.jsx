@@ -35,7 +35,7 @@ function Login({ setUser }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("user"); // Default role
+  const [role, setRole] = useState("user");
   const [isLogin, setIsLogin] = useState(true);
 
   // Configurar las mutaciones de login y register
@@ -50,9 +50,9 @@ function Login({ setUser }) {
     e.preventDefault();
     try {
       const response = await login({ variables: { username, password } });
-      alert("Login successful:", loginData);
+      alert("Login successful:", username);
       localStorage.setItem("user", response.data.login);
-      setUser(response.data.login);
+      setUser(username);
     } catch (err) {
       alert("Login failed:", loginError);
     }
