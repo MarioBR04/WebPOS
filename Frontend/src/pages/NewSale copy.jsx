@@ -11,23 +11,21 @@ export default function NewSale() {
     { id: 4, name: "Desk Organizer", price: 20, number: "#3641" },
     { id: 5, name: "Monitor Stand", price: 40, number: "#3642" },
     { id: 6, name: "Office Chair", price: 120, number: "#3643" },
+    
   ];
 
   const [cart, setCart] = useState([]);
 
-  // Añadir producto al carrito
   const addToCart = (product) => {
     setCart((prevCart) => [...prevCart, product]);
   };
 
-  // Eliminar producto del carrito
   const removeFromCart = (productId) => {
     setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
   };
 
-  // Calcular total de la orden
   const calculateTotal = () => {
-    return cart.reduce((total, item) => total + item.price, 0).toFixed(2);
+    return cart.reduce((total, item) => total + item.price, 0);
   };
 
   return (
@@ -84,16 +82,15 @@ export default function NewSale() {
                 <input type="checkbox" className="mr-2" />
                 By checking this box, I agree to the Terms of Service.
               </label>
-              <Link
-                to="/payment"
-                className="mt-4 w-full px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-900 text-center block"
+              <button
+                className="mt-4 w-full px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-900"
               >
                 Proceed to Payment
-              </Link>
+              </button>
             </div>
           </div>
         )}
       </div>
-    </div>
+      </div>
   );
 }

@@ -1,0 +1,76 @@
+.cart-summary {
+    background-color: #f7f7f7; /* Light gray */
+    border: 1px solid #e0e0e0; /* Slightly darker gray */
+    border-radius: 8px;
+    color: #333; /* Dark gray for text */
+  }
+  
+  .cart-summary h2 {
+    color: #1a1a1a; /* Nearly black */
+  }
+  
+  .cart-summary ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  
+  .cart-summary li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .cart-summary li:last-child {
+    border-bottom: none;
+  }
+  
+  .cart-summary button {
+    background-color: #333; /* Dark gray */
+    color: #fff; /* White */
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .cart-summary button:hover {
+    background-color: #000; /* Black */
+  }
+  
+  .order-total {
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 1px solid #e0e0e0;
+  }
+  
+  .order-total span {
+    color: #1a1a1a; /* Nearly black */
+  }
+  
+  label {
+    color: #333; /* Dark gray */
+  }
+  
+  label input {
+    accent-color: #333; /* Custom dark gray checkbox */
+  }
+  
+  button {
+    background-color: #333; /* Dark gray */
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #000; /* Black */
+  }
+  

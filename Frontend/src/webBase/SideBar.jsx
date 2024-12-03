@@ -8,6 +8,7 @@ import {
   HiUserCircle,
   HiOutlineArchive,
 } from "react-icons/hi";
+import { FaMoneyBillAlt } from "react-icons/fa"; 
 import "./SideBar.css";
 
 function Sidebar() {
@@ -19,13 +20,19 @@ function Sidebar() {
     { to: "/newsale", label: "Nueva Venta", icon: <HiOutlineShoppingCart /> },
     {
       to: "/currentsales",
-      label: "Ventas Activas",
+      label: "Ventas",
       icon: <HiOutlineChartBar />,
     },
     {
       to: "/inventory",
       label: "Inventario",
-      icon: <HiOutlineArchive />,
+      icon: <HiOutlineArchive/>,
+    },
+    {
+      to: "/payment",
+      label: "Pago Preferido",
+      icon: (  <FaMoneyBillAlt />
+      ), 
     },
   ];
 
