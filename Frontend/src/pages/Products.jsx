@@ -3,64 +3,63 @@ import { useQuery, useMutation, gql } from "@apollo/client";
 import "./Products.css";
 
 const GET_PRODUCTS = gql`
-  query GetProducts {
-    products {
+  query GetProducts($username: String!) {
+    products(username: $username) {
       id
       username
       name
       price
-      description
       category
       barcode
       stock
-      image
     }
   }
 `;
 
 const ADD_PRODUCT = gql`
   mutation AddProduct(
-    $username: String!
     $name: String!
     $price: Float!
-    $description: String
     $category: String
     $barcode: String!
-    $image: String
     $stock: Int!
+    $username: String!
   ) {
     addProduct(
-      username: $username
       name: $name
       price: $price
-      description: $description
       category: $category
       barcode: $barcode
-      image: $image
       stock: $stock
+      username: $username
     ) {
       id
       name
       price
       stock
-      image
     }
   }
 `;
 
 function Products() {
   const [formData, setFormData] = useState({
-    username: localStorage.getItem("user"),
     name: "",
     price: 0,
-    description: "",
     category: "",
     barcode: "",
     stock: 0,
-    image: null, // Agregamos imagen
+    username: localStorage.getItem("user"),
   });
 
-  const { loading, error, data } = useQuery(GET_PRODUCTS);
+  const { loading, error, data } = useQuery(GET_PRODUCTS, {
+    variables: { username: localStorage.getItem("user") },
+  });
+  if (error) {
+    console.error(
+      "Detalles del error:",
+      error.networkError || error.graphQLErrors
+    );
+  }
   const [addProduct] = useMutation(ADD_PRODUCT, {
     refetchQueries: [{ query: GET_PRODUCTS }],
   });
@@ -68,17 +67,6 @@ function Products() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setFormData({ ...formData, image: reader.result }); // Base64
-    };
-    if (file) {
-      reader.readAsDataURL(file);
-    }
   };
 
   const handleSubmit = async (e) => {
@@ -95,11 +83,9 @@ function Products() {
         username: localStorage.getItem("user"),
         name: "",
         price: 0,
-        description: "",
         category: "",
         barcode: "",
         stock: 0,
-        image: null,
       });
       alert("Producto agregado con éxito.");
     } catch (err) {
@@ -120,13 +106,6 @@ function Products() {
             <p>Precio: ${product.price.toFixed(2)}</p>
             <p>Categoría: {product.category || "Sin categoría"}</p>
             <p>Stock: {product.stock}</p>
-            {product.image && (
-              <img
-                src={product.image}
-                alt={product.name}
-                className="product-image"
-              />
-            )}
           </div>
         ))}
       </div>
@@ -152,14 +131,6 @@ function Products() {
               value={formData.price}
               onChange={handleChange}
               required
-            />
-          </div>
-          <div>
-            <label>Descripción</label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
             />
           </div>
           <div>
@@ -190,10 +161,6 @@ function Products() {
               onChange={handleChange}
               required
             />
-          </div>
-          <div>
-            <label>Imagen</label>
-            <input type="file" accept="image/*" onChange={handleFileChange} />
           </div>
           <button type="submit">Agregar Producto</button>
         </form>

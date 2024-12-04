@@ -7,7 +7,6 @@ import NewSale from "./pages/NewSale";
 import CurrentSales from "./pages/CurrentSales";
 import Inventory from "./pages/Inventory";
 import Login from "./pages/Login";
-import Payment from "./pages/Payment";  
 import "./App.css";
 
 export default function App() {
@@ -23,14 +22,13 @@ export default function App() {
           <div className="navbar">
             <Navbar />
           </div>
-          <div className="main">
+          <div className="body">
             <Routes>
-              <Route path="/" element={<Dashboard />} />
+              <Route path="/" element={<CurrentSales />} />
               <Route path="/products" element={<Products />} />
               <Route path="/newsale" element={<NewSale />} />
               <Route path="/currentsales" element={<CurrentSales />} />
               <Route path="/inventory" element={<Inventory />} />
-              <Route path="/payment" element={<Payment />} />  {}
             </Routes>
           </div>
         </div>

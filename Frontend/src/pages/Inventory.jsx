@@ -1,168 +1,241 @@
-import React, { useState } from "react";
-import "./pages.css";
+import React, { useState, useEffect } from "react";
+import { useQuery, useMutation, gql } from "@apollo/client";
+import Modal from "./Modal";
+
+// GraphQL Queries y Mutations
+const EDIT_PRODUCT = gql`
+  mutation EditProduct(
+    $id: ID!
+    $name: String
+    $price: Float
+    $category: String
+    $barcode: String
+    $stock: Int
+    $username: String
+  ) {
+    editProduct(
+      id: $id
+      name: $name
+      price: $price
+      category: $category
+      barcode: $barcode
+      stock: $stock
+      username: $username
+    ) {
+      id
+      name
+      price
+      category
+      barcode
+      stock
+      username
+    }
+  }
+`;
+
+const GET_PRODUCTS = gql`
+  query GetProducts($username: String!) {
+    products(username: $username) {
+      id
+      username
+      name
+      price
+      category
+      barcode
+      stock
+    }
+  }
+`;
+
+const ADD_PRODUCT = gql`
+  mutation AddProduct(
+    $name: String!
+    $price: Float!
+    $category: String
+    $barcode: String!
+    $stock: Int!
+    $username: String!
+  ) {
+    addProduct(
+      name: $name
+      price: $price
+      category: $category
+      barcode: $barcode
+      stock: $stock
+      username: $username
+    ) {
+      id
+      name
+      price
+      stock
+    }
+  }
+`;
+
+const DELETE_PRODUCT = gql`
+  mutation DeleteProduct($id: ID!) {
+    deleteProduct(id: $id)
+  }
+`;
 
 export default function Inventory() {
-  const [inventory, setInventory] = useState([
-    { id: 1, name: "Table Material Description", number: "#3638", price: 56, available: 10, incoming: 5 },
-    { id: 2, name: "Chair Material Description", number: "#3639", price: 45, available: 8, incoming: 3 },
-    { id: 3, name: "Lamp", number: "#3640", price: 30, available: 15, incoming: 10 },
-  ]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [modalMode, setModalMode] = useState("add"); // "add" o "edit"
 
-  const [newProduct, setNewProduct] = useState({
-    name: "",
-    number: "",
-    price: "",
-    available: "",
-    incoming: "",
+  const { loading, error, data } = useQuery(GET_PRODUCTS, {
+    variables: { username: localStorage.getItem("user") },
   });
 
-  const [showForm, setShowForm] = useState(false);
-  const [errors, setErrors] = useState({}); // Estado para manejar los errores
+  const [addProduct] = useMutation(ADD_PRODUCT, {
+    refetchQueries: [{ query: GET_PRODUCTS }],
+  });
 
-  const deleteProduct = (productId) => {
-    setInventory((prevInventory) => prevInventory.filter((product) => product.id !== productId));
+  const [editProduct] = useMutation(EDIT_PRODUCT, {
+    refetchQueries: [{ query: GET_PRODUCTS }],
+  });
+
+  const [deleteProduct] = useMutation(DELETE_PRODUCT, {
+    refetchQueries: [{ query: GET_PRODUCTS }],
+  });
+
+  const handleOpenModal = (mode, product = null) => {
+    setModalMode(mode);
+    setSelectedProduct(product);
+    setIsModalOpen(true);
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewProduct((prev) => ({ ...prev, [name]: value }));
-    setErrors((prev) => ({ ...prev, [name]: false })); // Elimina el error al llenar el campo
+  const handleCloseModal = async () => {
+    setIsModalOpen(false);
+    setSelectedProduct(null);
   };
 
-  const addProduct = () => {
-    const newErrors = {};
-    if (!newProduct.name) newErrors.name = true;
-    if (!newProduct.number) newErrors.number = true;
-    if (!newProduct.price) newErrors.price = true;
-    if (!newProduct.available) newErrors.available = true;
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      alert("Por favor, completa todos los campos obligatorios.");
-      return;
+  const handleDeleteProduct = async (id) => {
+    const confirmDelete = window.confirm(
+      "¿Estás seguro de que deseas eliminar este producto?"
+    );
+    if (!confirmDelete) return;
+    try {
+      await deleteProduct({ variables: { id } });
+      refetchQueries: [
+        {
+          query: GET_PRODUCTS,
+          variables: { username: localStorage.getItem("user") },
+        },
+      ],
+        alert("Producto eliminado con éxito.");
+    } catch (err) {
+      console.error("Error al eliminar producto:", err.message);
+      console.error(err);
+      alert("No se pudo procesar la solicitud.");
     }
-
-    setInventory((prev) => [
-      ...prev,
-      {
-        id: prev.length + 1,
-        name: newProduct.name,
-        number: newProduct.number,
-        price: parseFloat(newProduct.price),
-        available: parseInt(newProduct.available),
-        incoming: parseInt(newProduct.incoming || 0),
-      },
-    ]);
-
-    setNewProduct({
-      name: "",
-      number: "",
-      price: "",
-      available: "",
-      incoming: "",
-    });
-
-    setShowForm(false);
   };
+  const handleSaveProduct = async (formData) => {
+    try {
+      if (modalMode === "edit") {
+        await editProduct({
+          variables: {
+            ...formData,
+            id: formData.id,
+            price: parseFloat(formData.price),
+            stock: parseInt(formData.stock, 10),
+          },
+          refetchQueries: [
+            {
+              query: GET_PRODUCTS,
+              variables: { username: localStorage.getItem("user") },
+            },
+          ],
+        });
+        alert("Producto actualizado con éxito.");
+      } else {
+        await addProduct({
+          variables: {
+            ...formData,
+            username: localStorage.getItem("user"),
+            price: parseFloat(formData.price),
+            stock: parseInt(formData.stock, 10),
+          },
+          refetchQueries: [
+            {
+              query: GET_PRODUCTS,
+              variables: { username: localStorage.getItem("user") },
+            },
+          ],
+        });
+        alert("Producto agregado con éxito.");
+      }
+    } catch (err) {
+      console.error("Error al guardar producto:", err.message);
+      alert("No se pudo procesar la solicitud.");
+    }
+    handleCloseModal();
+  };
+
+  if (loading) return <p>Cargando productos...</p>;
+  if (error) return <p>Error al cargar productos: {error.message}</p>;
 
   return (
-    <div className="main mx-auto mt-10 max-w-4xl">
-      <h1 className="text-3xl font-bold text-center text-gray-900 mb-6">Inventory Management</h1>
+    <div className="main mx-auto mt-0 max-w-4xl">
+      <h1 className="text-3xl font-bold text-center text-gray-900 mb-6 mt-0">
+        Inventory Management
+      </h1>
 
       <div className="text-center mb-6">
         <button
-          onClick={() => setShowForm((prev) => !prev)}
+          onClick={() => handleOpenModal("add")}
           className="px-6 py-3 bg-gray-800 text-white rounded hover:bg-gray-900 transition"
         >
-          {showForm ? "Cerrar Formulario" : "Agregar Nuevo Producto"}
+          Agregar Nuevo Producto
         </button>
       </div>
-
-      {showForm && (
-        <div className="mb-6 p-6 bg-gray-100 rounded-lg shadow text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Agregar Nuevo Producto</h2>
-          <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input
-              type="text"
-              name="name"
-              placeholder="Nombre del Producto"
-              value={newProduct.name}
-              onChange={handleInputChange}
-              className={`p-2 border rounded ${errors.name ? "border-red-500" : "border-gray-300"}`}
-            />
-            <input
-              type="text"
-              name="number"
-              placeholder="Número del Producto"
-              value={newProduct.number}
-              onChange={handleInputChange}
-              className={`p-2 border rounded ${errors.number ? "border-red-500" : "border-gray-300"}`}
-            />
-            <input
-              type="number"
-              name="price"
-              placeholder="Precio"
-              value={newProduct.price}
-              onChange={handleInputChange}
-              className={`p-2 border rounded ${errors.price ? "border-red-500" : "border-gray-300"}`}
-            />
-            <input
-              type="number"
-              name="available"
-              placeholder="Cantidad Disponible"
-              value={newProduct.available}
-              onChange={handleInputChange}
-              className={`p-2 border rounded ${errors.available ? "border-red-500" : "border-gray-300"}`}
-            />
-            <input
-              type="number"
-              name="incoming"
-              placeholder="Cantidad Entrante (opcional)"
-              value={newProduct.incoming}
-              onChange={handleInputChange}
-              className="p-2 border border-gray-300 rounded"
-            />
-          </form>
-          <button
-            onClick={addProduct}
-            className="mt-4 px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-900"
-          >
-            Agregar Producto
-          </button>
-        </div>
-      )}
 
       <table className="w-full mt-6 bg-white rounded-lg shadow border border-gray-300 text-center">
         <thead className="bg-gray-100">
           <tr>
-            <th className="p-4 text-left font-medium text-gray-800">Producto</th>
-            <th className="p-4 text-left font-medium text-gray-800">Número</th>
-            <th className="p-4 text-center font-medium text-gray-800">Precio</th>
-            <th className="p-4 text-center font-medium text-gray-800">Entrante</th>
-            <th className="p-4 text-center font-medium text-gray-800">Disponible</th>
-            <th className="p-4 text-center font-medium text-gray-800">Acción</th>
+            <th className="p-4 text-center font-medium text-gray-800">
+              Codigo
+            </th>
+            <th className="p-4 text-center font-medium text-gray-800">
+              Producto
+            </th>
+            <th className="p-4 text-center font-medium text-gray-800">
+              Precio
+            </th>
+            <th className="p-4 text-center font-medium text-gray-800">Stock</th>
+            <th className="p-4 text-center font-medium text-gray-800">
+              Editar
+            </th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-300">
-          {inventory.map((item) => (
-            <tr key={item.id}>
-              <td className="p-4">{item.name}</td>
-              <td className="p-4">{item.number}</td>
-              <td className="p-4 text-center">${item.price}</td>
-              <td className="p-4 text-center">{item.incoming}</td>
-              <td className="p-4 text-center">{item.available}</td>
+          {data.products.map((product) => (
+            <tr key={product.id}>
+              <td className="p-4 text-center">{product.barcode}</td>
+              <td className="p-4 text-center">{product.name}</td>
+              <td className="p-4 text-center">${product.price.toFixed(2)}</td>
+              <td className="p-4 text-center">{product.stock}</td>
               <td className="p-4 text-center">
                 <button
-                  onClick={() => deleteProduct(item.id)}
-                  className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                  onClick={() => handleOpenModal("edit", product)}
+                  className="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-900 m-1"
                 >
-                  Eliminar
+                  Editar
                 </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        product={selectedProduct}
+        onSave={handleSaveProduct}
+        mode={modalMode}
+        onDelete={handleDeleteProduct}
+      />
     </div>
   );
 }

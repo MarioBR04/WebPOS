@@ -8,15 +8,13 @@ import {
   HiUserCircle,
   HiOutlineArchive,
 } from "react-icons/hi";
-import { FaMoneyBillAlt } from "react-icons/fa"; 
+import { FaMoneyBillAlt } from "react-icons/fa";
 import "./SideBar.css";
 
 function Sidebar() {
   const location = useLocation();
 
   const navLinks = [
-    { to: "/", label: "Dashboard", icon: <HiOutlineHome /> },
-    { to: "/products", label: "Productos", icon: <HiOutlineClipboardList /> },
     { to: "/newsale", label: "Nueva Venta", icon: <HiOutlineShoppingCart /> },
     {
       to: "/currentsales",
@@ -26,13 +24,7 @@ function Sidebar() {
     {
       to: "/inventory",
       label: "Inventario",
-      icon: <HiOutlineArchive/>,
-    },
-    {
-      to: "/payment",
-      label: "Pago Preferido",
-      icon: (  <FaMoneyBillAlt />
-      ), 
+      icon: <HiOutlineArchive />,
     },
   ];
 

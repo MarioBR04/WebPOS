@@ -1,13 +1,17 @@
-.main {
+.body {
   margin-left: 13%;
   position: static;
+  padding-top: 2%;
 }
 .navbar {
+  margin-top: 0%;
   width: 13%;
-  height: 100vh;
+  height: 100%;
   background-color: #f3f4f6;
   border-right: 1px solid #e5e7eb;
   display: flex;
   flex-direction: column;
   position: fixed;
+  font-weight: 500;
+  color: #1f2937;
 }
